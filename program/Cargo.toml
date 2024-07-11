@@ -1,0 +1,24 @@
+[workspace]
+[package]
+version = "0.1.0"
+name = "blob-stream-inclusion-program"
+edition = "2021"
+
+[dependencies]
+alloy-sol-types = "0.7.6"
+alloy-primitives = "0.7.6"
+sp1-zkvm = { git = "https://github.com/succinctlabs/sp1.git", tag = "v1.0.7-testnet" }
+nmt-rs = {git="https://github.com/Sovereign-Labs/nmt-rs.git", rev="ac03d7c", features=["serde"]}
+celestia-types = {git="https://github.com/eigerco/lumina.git", rev="8094d04"}
+serde = { version = "1.0.164", features = ["derive"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+bincode = "1.3.3"
+tendermint-light-client-verifier = { version = "0.35.0", default-features = false, features = [
+    "rust-crypto",
+] }
+tendermint = "0.35.0"
+sha2 = "0.10"
+serde_cbor = "0.11.2"
+
+[patch.crates-io]
+nmt-rs = {git="https://github.com/Sovereign-Labs/nmt-rs.git", rev="ac03d7c", features=["serde"]}
