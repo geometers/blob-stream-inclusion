@@ -105,7 +105,6 @@ fn blob_inclusion(
     let blob = sp1_zkvm::io::read::<Blob>();
 
     let shares = blob.to_shares().expect("Failed to split blob to shares");
-    let shares: Vec<[u8; 512]> = shares.iter().map(|share| share.data).collect();
 
     // For each row spanned by the blob, we have a NMT range proof
     let mut proofs = vec![];
@@ -117,16 +116,14 @@ fn blob_inclusion(
     // We have one NMT range proof for each row spanned by the blob
     // Verify that the blob's shares go into the respective row roots
     {
-        println!("namespace: {:?}", namespace);
         let mut start = 0;
         for i in 0..(num_rows as usize) {
             let proof = &proofs[i];
             let root: &NamespacedHash<29> = &row_roots[i];
             let end: usize = start + (proof.end_idx() as usize - proof.start_idx() as usize);
-            // FIXME this is failing
-            // assert!(proof
-            //     .verify_range(root, &shares[start..end], namespace.into())
-            //     .is_ok());
+            assert!(proof
+                .verify_range(root, &shares[start..end], namespace.into())
+                .is_ok());
             start = end;
         }
     }

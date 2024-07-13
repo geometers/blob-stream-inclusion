@@ -3,9 +3,9 @@
 ## Hard-coded example blob
 ```bash
 cd script && cargo run --release \
--- --trusted-block=1266372 --target-block=1266374 --block-height=1266373 \
---namespace="072c4a8666dfa3ae" \
---commitment="2b8b01bb6f77b840af59063fec2c644eb40fcc9992aab7d04f84e563cdf02449"
+-- --trusted-block=1279714 --target-block=1279716 --block-height=1279715 \
+--namespace=7463656c6573746961 \
+--commitment=b596140c4ae3c16f14d02878bc0ac3f3702bdee8a2d31218223130673f0ac220
 ```
 
 ## Arbitrary blobs

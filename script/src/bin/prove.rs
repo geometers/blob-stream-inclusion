@@ -1,4 +1,4 @@
-use core::num;
+use std::fs;
 use std::fs::File;
 use std::io::Write;
 
@@ -83,8 +83,8 @@ fn blob_inclusion(
     let commitment = Commitment(hex::decode(commitment).unwrap().try_into().unwrap());
 
     let rt = runtime::Runtime::new()?;
-    let dah = match serde_json::from_str(include_str!("../../dah.json")) {
-        Ok(dah) => dah,
+    let dah = match fs::read_to_string("dah.json") {
+        Ok(string) => serde_json::from_str(&string).unwrap(),
         _ => {
             let dah = rt.block_on(async { get_header_by_height(block_height).await });
             let json_string = serde_json::to_string(&dah)?;
@@ -93,8 +93,8 @@ fn blob_inclusion(
             dah
         }
     };
-    let blob = match serde_json::from_str(include_str!("../../blob.json")) {
-        Ok(blob) => blob,
+    let blob = match fs::read_to_string("blob.json") {
+        Ok(string) => serde_json::from_str(&string).unwrap(),
         _ => {
             let blob = rt.block_on(async { get_blob(block_height, commitment, namespace).await });
             let json_string = serde_json::to_string(&blob)?;
@@ -105,8 +105,8 @@ fn blob_inclusion(
     };
 
     // NMT range proofs, from leaves into row roots.
-    let proofs = match serde_json::from_str(include_str!("../../proofs.json")) {
-        Ok(proofs) => proofs,
+    let proofs = match fs::read_to_string("proofs.json") {
+        Ok(string) => serde_json::from_str(&string).unwrap(),
         _ => {
             let proofs =
                 rt.block_on(async { get_blob_proof(block_height, commitment, namespace).await });
@@ -136,13 +136,11 @@ fn blob_inclusion(
 
     // extended data square (EDS) size
     let eds_size = eds_row_roots.len();
-    // original data square (ODS) size
-    let ods_size = eds_size / 2;
 
     let blob_index: usize = blob.index.unwrap().try_into().unwrap();
     let num_shares: usize = std::cmp::max(1, blob.data.len() / 512);
-    let num_rows = std::cmp::max(1, num_shares / ods_size);
-    let first_row_index: usize = blob_index / ods_size;
+    let num_rows = std::cmp::max(1, num_shares / eds_size);
+    let first_row_index: usize = blob_index / eds_size;
     let last_row_index: usize = first_row_index + num_rows;
 
     let shares = blob.to_shares().unwrap();
@@ -154,8 +152,7 @@ fn blob_inclusion(
         .for_each(|(proof, root)| {
             let end = start + (proof.end_idx() - proof.start_idx()) as usize;
             let verify = proof.verify_range(root, &shares[start..end], namespace.into());
-            // FIXME this is failing
-            // assert!(verify.is_ok());
+            assert!(verify.is_ok());
             start = end;
         });
 
