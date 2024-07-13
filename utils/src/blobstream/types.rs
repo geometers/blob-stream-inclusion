@@ -1,6 +1,4 @@
 #![allow(dead_code)]
-use alloy_sol_types::sol;
-use clap::Parser;
 use serde::{Deserialize, Serialize};
 use tendermint::{
     block::{self, signed_header::SignedHeader, Header},
@@ -9,13 +7,20 @@ use tendermint::{
 };
 use tendermint_light_client_verifier::types::LightBlock;
 
+use alloy::sol;
+
+pub type DataRootTuple = sol! {
+    tuple(uint64, bytes32)
+};
+
 /// bytes32 trusted_header_hash;
 /// bytes32 target_header_hash;
 /// bytes32 data_commitment;
 /// uint64 trusted_block;
 /// uint64 target_block;
+/// uint256 validator_bitmap;
 pub type ProofOutputs = sol! {
-    tuple(bytes32, bytes32, bytes32, uint64, uint64)
+    tuple(bytes32, bytes32, bytes32, uint64, uint64, uint256)
 };
 
 #[derive(Debug, Serialize, Deserialize)]

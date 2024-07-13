@@ -1,11 +1,19 @@
 #![allow(dead_code)]
+use super::types::DataRootTuple;
 use super::types::*;
-use alloy_primitives::B256;
+use alloy::primitives::B256;
+use alloy::primitives::U256;
+use alloy::sol_types::SolType;
+use core::time::Duration;
 use reqwest::Client;
+use sha2::Sha256;
 use sp1_sdk::{ProverClient, SP1ProvingKey, SP1VerifyingKey};
+use std::collections::HashSet;
+use std::ops::Add;
 use std::{collections::HashMap, env, error::Error};
 use subtle_encoding::hex;
-use tendermint::block::Commit;
+use tendermint::block::{Commit, Header};
+use tendermint::merkle::simple_hash_from_byte_vectors;
 use tendermint::validator::Set as TendermintValidatorSet;
 use tendermint::{
     block::signed_header::SignedHeader,
@@ -13,6 +21,53 @@ use tendermint::{
     validator::{Info, Set},
 };
 use tendermint_light_client_verifier::types::{LightBlock, ValidatorSet};
+use tendermint_light_client_verifier::{options::Options, ProdVerifier, Verdict, Verifier};
+
+/// Get the verdict for the header update from trusted_block to target_block.
+pub fn get_header_update_verdict(trusted_block: &LightBlock, target_block: &LightBlock) -> Verdict {
+    let opt = Options {
+        // TODO: Should we set a custom threshold?
+        trust_threshold: Default::default(),
+        // 2 week trusting period.
+        trusting_period: Duration::from_secs(14 * 24 * 60 * 60),
+        clock_drift: Default::default(),
+    };
+
+    let vp = ProdVerifier::default();
+    // TODO: What should we set the verify time to? This prevents outdated headers from being used.
+    let verify_time = target_block.time() + Duration::from_secs(20);
+    vp.verify_update_header(
+        target_block.as_untrusted_state(),
+        trusted_block.as_trusted_state(),
+        &opt,
+        verify_time.unwrap(),
+    )
+}
+
+/// Compute the data commitment for the given headers.
+pub fn compute_data_commitment(headers: &[Header]) -> [u8; 32] {
+    let mut encoded_data_root_tuples: Vec<Vec<u8>> = Vec::new();
+    for i in 1..headers.len() {
+        let prev_header = &headers[i - 1];
+        let curr_header = &headers[i];
+        // Checks that chain of headers is well-formed.
+        if prev_header.hash() != curr_header.last_block_id.unwrap().hash {
+            panic!("invalid header");
+        }
+
+        let data_hash: [u8; 32] = prev_header
+            .data_hash
+            .unwrap()
+            .as_bytes()
+            .try_into()
+            .unwrap();
+
+        let data_root_tuple = DataRootTuple::abi_encode(&(prev_header.height.value(), data_hash));
+        encoded_data_root_tuples.push(data_root_tuple);
+    }
+
+    simple_hash_from_byte_vectors::<Sha256>(&encoded_data_root_tuples)
+}
 
 pub struct TendermintRPCClient {
     url: String,
@@ -398,4 +453,56 @@ pub async fn get_data_commitment(start_block: u64, end_block: u64) {
     let res = reqwest::get(url.clone()).await;
 
     println!("Data Commitment Response: {:?}", res.unwrap())
+}
+
+/// Construct a bitmap of the intersection of the validators that signed off on the trusted and
+/// target header. Use the order of the validators from the trusted header. Equivocates slashing in
+/// the case that validators are malicious. 256 is chosen as the maximum number of validators as it
+/// is unlikely that Celestia has >256 validators.
+pub fn get_validator_bitmap_commitment(
+    trusted_light_block: &LightBlock,
+    target_light_block: &LightBlock,
+) -> U256 {
+    // If a validtor has signed off on both headers, add them to the intersection set.
+    let mut validator_commit_intersection = HashSet::new();
+    for i in 0..trusted_light_block.signed_header.commit.signatures.len() {
+        for j in 0..target_light_block.signed_header.commit.signatures.len() {
+            let trusted_sig = &trusted_light_block.signed_header.commit.signatures[i];
+            let target_sig = &target_light_block.signed_header.commit.signatures[j];
+
+            if trusted_sig.is_commit()
+                && target_sig.is_commit()
+                && trusted_sig.validator_address() == target_sig.validator_address()
+            {
+                validator_commit_intersection.insert(trusted_sig.validator_address().unwrap());
+            }
+        }
+    }
+
+    // Construct the validator bitmap.
+    let mut validator_bitmap = [false; 256];
+    for (i, validator) in trusted_light_block
+        .validators
+        .validators()
+        .iter()
+        .enumerate()
+    {
+        if validator_commit_intersection.contains(&validator.address) {
+            validator_bitmap[i] = true;
+        }
+    }
+
+    // Convert the validator bitmap to a U256.
+    convert_bitmap_to_u256(validator_bitmap)
+}
+
+// Convert a boolean array to a U256. Used to commit to the validator bitmap.
+pub fn convert_bitmap_to_u256(arr: [bool; 256]) -> U256 {
+    let mut res = U256::from(0);
+    for (index, &value) in arr.iter().enumerate() {
+        if value {
+            res = res.add(U256::from(1) << index)
+        }
+    }
+    res
 }

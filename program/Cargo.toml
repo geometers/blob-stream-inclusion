@@ -5,9 +5,10 @@ name = "blob-stream-inclusion-program"
 edition = "2021"
 
 [dependencies]
-alloy-sol-types = "0.7.6"
-alloy-primitives = "0.7.6"
-sp1-zkvm = { git = "https://github.com/succinctlabs/sp1.git", tag = "v1.0.7-testnet" }
+alloy = { version = "0.1.1", default-features = false, features = [
+    "sol-types",
+] }
+sp1-zkvm = { git = "https://github.com/succinctlabs/sp1.git", tag = "v1.0.8-testnet" }
 nmt-rs = {git="https://github.com/Sovereign-Labs/nmt-rs.git", rev="ac03d7c", features=["serde"]}
 celestia-types = {git="https://github.com/eigerco/lumina.git", rev="8094d04"}
 serde = { version = "1.0.164", features = ["derive"] }
@@ -22,3 +23,6 @@ serde_cbor = "0.11.2"
 
 [patch.crates-io]
 nmt-rs = {git="https://github.com/Sovereign-Labs/nmt-rs.git", rev="ac03d7c", features=["serde"]}
+sha2-v0-9-8 = { git = "https://github.com/sp1-patches/RustCrypto-hashes", package = "sha2", branch = "patch-v0.9.8" }
+sha2-v0-10-8 = { git = "https://github.com/sp1-patches/RustCrypto-hashes", package = "sha2", branch = "patch-v0.10.8" }
+ed25519-consensus = { git = "https://github.com/sp1-patches/ed25519-consensus", branch = "patch-v2.1.0" }

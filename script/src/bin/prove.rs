@@ -14,11 +14,10 @@ use nmt_rs::simple_merkle::db::MemDb;
 use nmt_rs::simple_merkle::tree::MerkleTree;
 use nmt_rs::TmSha2Hasher;
 
-use alloy_sol_types::SolType;
 use tokio::runtime;
 
 use utils::blobstream::helper::*;
-use utils::blobstream::types::{ProofInputs, ProofOutputs};
+use utils::blobstream::types::ProofInputs;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -214,10 +213,6 @@ fn main() -> anyhow::Result<()> {
         .prove(&prover.pkey, stdin)
         .expect("proving failed");
     println!("Successfully generated proof!");
-
-    let public_values = proof.public_values.as_ref();
-    let outputs = ProofOutputs::abi_decode(public_values, true).unwrap();
-    println!("Data commitment: {:?}", outputs.2);
 
     // Verify proof.
     prover
