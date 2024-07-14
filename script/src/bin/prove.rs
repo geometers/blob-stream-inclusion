@@ -135,10 +135,11 @@ fn blob_inclusion(
 
     // extended data square (EDS) size
     let eds_size = eds_row_roots.len();
+    let ods_size = eds_size / 2;
 
     let blob_index: usize = blob.index.unwrap().try_into().unwrap();
     let num_shares: usize = std::cmp::max(1, blob.data.len() / 512);
-    let num_rows = std::cmp::max(1, num_shares / eds_size);
+    let num_rows = std::cmp::max(1, num_shares / ods_size);
     let first_row_index: usize = blob_index / eds_size;
     let last_row_index: usize = first_row_index + num_rows;
 
