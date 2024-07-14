@@ -1,0 +1,46 @@
+[workspace]
+[package]
+version = "0.1.0"
+name = "blob-inclusion-script"
+edition = "2021"
+default-run = "prove"
+
+[[bin]]
+name = "prove"
+path = "src/bin/prove.rs"
+
+[[bin]]
+name = "vkey"
+path = "src/bin/vkey.rs"
+
+[dependencies]
+sp1-sdk = { git = "https://github.com/succinctlabs/sp1.git", tag = "v1.0.8-testnet" }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+serde_cbor = "0.11.2"
+clap = { version = "4.0", features = ["derive", "env"] }
+tracing = "0.1.40"
+celestia-rpc = {git="https://github.com/eigerco/lumina.git", rev="8094d04"}
+celestia-types = {git="https://github.com/eigerco/lumina.git", rev="8094d04"}
+nmt-rs = {git="https://github.com/Sovereign-Labs/nmt-rs.git", rev="ac03d7c", features=["serde"]}
+sp1-prover = { git = "https://github.com/succinctlabs/sp1.git", rev = "v1.0.8-testnet" }
+anyhow = "1.0.82"
+dotenv = "0.15.0"
+tokio = { version = "^1.38.0", features = ["full"] }
+tendermint = { version = "0.35.0", default-features = false }
+hex = "0.4.3"
+alloy = { version = "0.1.1", default-features = false, features = [
+    "sol-types",
+] }
+log = "0.4.21"
+futures = "0.3.30"
+reqwest = { version = "0.11", features = ["json"] }
+tendermint-light-client-verifier = { version = "0.35.0", default-features = false, features = [
+    "rust-crypto",
+] }
+
+[build-dependencies]
+sp1-helper = { git = "https://github.com/succinctlabs/sp1.git", branch = "ratan/add-ignore-rust-version-to-build-script" }
+
+[patch.crates-io]
+nmt-rs = {git="https://github.com/Sovereign-Labs/nmt-rs.git", rev="ac03d7c", features=["serde"]}

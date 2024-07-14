@@ -1,3 +1,0 @@
-# https://celenium.io/blob?commitment=K4sBu293uECvWQY/7CxkTrQPzJmSqrfQT4TlY83wJEk=&hash=AAAAAAAAAAAAAAAAAAAAAAAAAAAAByxKhmbfo64=&height=1266373
-
-cargo run --release -- --trusted-block=1266372 --target-block=1266374 --block-height=1266373 --namespace="072c4a8666dfa3ae" --commitment="2b8b01bb6f77b840af59063fec2c644eb40fcc9992aab7d04f84e563cdf02449"

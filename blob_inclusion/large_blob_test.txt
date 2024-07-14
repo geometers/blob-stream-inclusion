@@ -1,0 +1,3 @@
+https://celenium.io/blob?commitment=tZYUDErjwW8U0Ch4vArD83Ar3uii0xIYIjEwZz8KwiA=&hash=AAAAAAAAAAAAAAAAAAAAAAAAAAB0Y2VsZXN0aWE=&height=1279715
+
+cargo run --release -- --start-height=1279714 --end-height=1279716 --block-height=1279715 --namespace="7463656c6573746961" --commitment="b596140c4ae3c16f14d02878bc0ac3f3702bdee8a2d31218223130673f0ac220"
