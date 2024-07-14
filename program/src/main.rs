@@ -158,11 +158,7 @@ pub fn convert_bitmap_to_u256(arr: [bool; 256]) -> U256 {
     res
 }
 
-fn blobstream() -> (u64, u64, Vec<Header>) {
-    // Read in the proof inputs. Note: Use a slice, as bincode is unable to deserialize protobuf.
-    let proof_inputs_vec = sp1_zkvm::io::read_vec();
-    let proof_inputs = serde_cbor::from_slice(&proof_inputs_vec).unwrap();
-
+fn blobstream(proof_inputs: &ProofInputs) {
     let ProofInputs {
         trusted_block_height,
         target_block_height,
@@ -171,7 +167,7 @@ fn blobstream() -> (u64, u64, Vec<Header>) {
         headers,
     } = proof_inputs;
 
-    let verdict = get_header_update_verdict(&trusted_light_block, &target_light_block);
+    let verdict = get_header_update_verdict(trusted_light_block, target_light_block);
 
     // If the Verdict is not Success, panic.
     match verdict {
@@ -191,13 +187,13 @@ fn blobstream() -> (u64, u64, Vec<Header>) {
     // Compute the data commitment across the range.
     let mut all_headers = Vec::new();
     all_headers.push(trusted_light_block.signed_header.header.clone());
-    all_headers.extend(headers);
+    all_headers.extend(headers.clone());
     all_headers.push(target_light_block.signed_header.header.clone());
     let data_commitment = B256::from_slice(&compute_data_commitment(&all_headers));
 
     // Get the commitment to the validator bitmap.
     let validator_bitmap_u256 =
-        get_validator_bitmap_commitment(&trusted_light_block, &target_light_block);
+        get_validator_bitmap_commitment(trusted_light_block, target_light_block);
 
     // ABI encode the proof outputs to bytes and commit them to the zkVM.
     let trusted_header_hash =
@@ -213,25 +209,31 @@ fn blobstream() -> (u64, u64, Vec<Header>) {
         validator_bitmap_u256,
     ));
     sp1_zkvm::io::commit_slice(&proof_outputs);
-
-    (trusted_block_height, target_block_height, all_headers)
 }
 
-fn blob_inclusion(
-    trusted_block_height: u64,
-    target_block_height: u64,
-    blobstream_headers: Vec<Header>,
-) {
+fn blob_inclusion(proof_inputs: &ProofInputs) {
+    let ProofInputs {
+        trusted_block_height,
+        target_block_height,
+        trusted_light_block,
+        target_light_block,
+        headers,
+    } = proof_inputs;
+    let mut all_headers = Vec::new();
+    all_headers.push(trusted_light_block.signed_header.header.clone());
+    all_headers.extend(headers.clone());
+    all_headers.push(target_light_block.signed_header.header.clone());
+
     // Read the Data Availability Header data root
     let data_root: Vec<u8> = sp1_zkvm::io::read_vec();
     assert!(data_root.len() == 32);
 
     // Read the block height
     let block_height: u64 = sp1_zkvm::io::read();
-    assert!(block_height >= trusted_block_height);
-    assert!(block_height <= target_block_height);
+    assert!(block_height >= *trusted_block_height);
+    assert!(block_height <= *target_block_height);
 
-    let blobstream_header = &blobstream_headers[(block_height - trusted_block_height) as usize];
+    let blobstream_header = &all_headers[(block_height - trusted_block_height) as usize];
     assert_eq!(data_root, blobstream_header.data_hash.unwrap().as_bytes());
 
     // Read num rows
@@ -293,6 +295,10 @@ fn blob_inclusion(
 }
 
 pub fn main() {
-    let (trusted_block_height, target_block_height, headers) = blobstream();
-    blob_inclusion(trusted_block_height, target_block_height, headers);
+    // Read in the proof inputs. Note: Use a slice, as bincode is unable to deserialize protobuf.
+    let proof_inputs_vec = sp1_zkvm::io::read_vec();
+    let proof_inputs: ProofInputs = serde_cbor::from_slice(&proof_inputs_vec).unwrap();
+
+    // blobstream(&proof_inputs);
+    blob_inclusion(&proof_inputs);
 }
