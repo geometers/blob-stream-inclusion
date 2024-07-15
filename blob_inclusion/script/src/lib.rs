@@ -4,6 +4,7 @@ use celestia_types::{
     Blob, Commitment, ExtendedHeader,
 };
 
+pub mod request;
 pub mod tendermint_helper;
 pub mod tendermint_types;
 

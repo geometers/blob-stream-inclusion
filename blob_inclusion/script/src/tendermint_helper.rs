@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 use crate::tendermint_types::*;
+use reqwest::Client;
 use std::{collections::HashMap, env, error::Error};
 use tendermint::{
     block::signed_header::SignedHeader,
@@ -7,7 +8,6 @@ use tendermint::{
     validator::{Info, Set},
 };
 use tendermint_light_client_verifier::types::{LightBlock, ValidatorSet};
-use reqwest::Client;
 
 pub struct TendermintRPCClient {
     url: String,
@@ -77,7 +77,6 @@ impl TendermintRPCClient {
 
         Ok(validators)
     }
-
 
     /// Fetches all light blocks for the given range of block heights. Inclusive of start and end.
     pub async fn fetch_light_blocks_in_range(
@@ -180,4 +179,3 @@ impl TendermintRPCClient {
         });
     }
 }
-
