@@ -14,9 +14,9 @@ cd blobstream/script && cargo run --release \
 ### Blob inclusion
 ```bash
 cd blob_inclusion/script && cargo run --release \
--- --start-block=1279714 \
---end-block=1279716
--- block-height=1279715 \
+-- --start-height=1279714 \
+--end-height=1279716 \
+--block-height=1279715 \
 --namespace=7463656c6573746961 \
 --commitment=b596140c4ae3c16f14d02878bc0ac3f3702bdee8a2d31218223130673f0ac220
 ```
