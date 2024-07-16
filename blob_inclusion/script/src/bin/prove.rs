@@ -171,11 +171,16 @@ fn main() -> anyhow::Result<()> {
     stdin.write_vec(encoded_headers);
 
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
-    let proof = prover.prove(&pkey, stdin).expect("proving failed");
+    let proof = prover.prove_plonk(&pkey, stdin).expect("proving failed");
     println!("Successfully generated proof!");
 
     // Verify proof.
-    prover.verify(&proof, &vkey).expect("Verification failed");
+    prover.verify_plonk(&proof, &vkey).expect("Verification failed");
+
+    // Save the proof.
+    proof
+        .save("proof-with-pis.bin")
+        .expect("saving proof failed");
 
     Ok(())
 }

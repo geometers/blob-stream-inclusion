@@ -46,15 +46,20 @@ fn main() -> anyhow::Result<()> {
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
     let proof = prover
         .prover_client
-        .prove(&prover.pkey, stdin)
+        .prove_plonk(&prover.pkey, stdin)
         .expect("proving failed");
     println!("Successfully generated proof!");
 
     // Verify proof.
     prover
         .prover_client
-        .verify(&proof, &prover.vkey)
+        .verify_plonk(&proof, &prover.vkey)
         .expect("Verification failed");
+
+    // Save the proof.
+    proof
+        .save("proof-with-pis.bin")
+        .expect("saving proof failed");
 
     Ok(())
 }
