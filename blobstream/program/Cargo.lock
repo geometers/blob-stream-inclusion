@@ -623,12 +623,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "lazy_static"
-version = "1.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
-
-[[package]]
 name = "libc"
 version = "0.2.155"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1150,7 +1144,7 @@ dependencies = [
 [[package]]
 name = "sp1-precompiles"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/sp1.git?tag=v1.0.8-testnet#14eb569d41d24721ffbd407d6060e202482d659c"
+source = "git+https://github.com/succinctlabs/sp1.git?rev=e48c01ec#e48c01ecc5c4bbea491289d19637c8ca57656532"
 dependencies = [
  "anyhow",
  "bincode",
@@ -1167,13 +1161,12 @@ dependencies = [
 [[package]]
 name = "sp1-zkvm"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/sp1.git?tag=v1.0.8-testnet#14eb569d41d24721ffbd407d6060e202482d659c"
+source = "git+https://github.com/succinctlabs/sp1.git?rev=e48c01ec#e48c01ecc5c4bbea491289d19637c8ca57656532"
 dependencies = [
  "bincode",
  "cfg-if",
  "getrandom",
  "k256",
- "lazy_static",
  "libm",
  "once_cell",
  "rand",

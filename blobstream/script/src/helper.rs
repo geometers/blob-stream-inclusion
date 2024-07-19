@@ -383,8 +383,7 @@ impl TendermintRPCClient {
 }
 
 // The path to the ELF file for the Succinct zkVM program.
-pub const TENDERMINT_ELF: &[u8] =
-    include_bytes!("../../program/elf/riscv32im-succinct-zkvm-elf");
+pub const TENDERMINT_ELF: &[u8] = include_bytes!("../../program/elf/riscv32im-succinct-zkvm-elf");
 
 pub struct TendermintProver {
     pub prover_client: ProverClient,

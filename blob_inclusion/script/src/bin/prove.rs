@@ -5,7 +5,7 @@ use blob_inclusion_script::tendermint_helper::TendermintRPCClient;
 use celestia_types::hash::Hash;
 use celestia_types::nmt::NamespacedHashExt;
 
-use blob_inclusion_script::{get_blob, get_blob_proof, get_header_by_height};
+use blob_inclusion_script::CelestiaLightNodeClient;
 use clap::Parser;
 use sp1_sdk::{ProverClient, SP1Stdin};
 
@@ -71,6 +71,17 @@ fn main() -> anyhow::Result<()> {
     assert_eq!(blob_requests.len(), num_requests as usize);
     stdin.write(&num_requests);
 
+    let celestia_light_client = {
+        let auth_token = match std::env::var("LIGHT_NODE_AUTH_TOKEN") {
+            Ok(token) => Some(token),
+            _ => None,
+        };
+        CelestiaLightNodeClient::new(
+            std::env::var("LIGHT_NODE_URL").expect("LIGHT_NODE_URL not set"),
+            auth_token,
+        )
+    };
+
     for blob_request in blob_requests {
         let BlobRequest {
             block_height,
@@ -78,14 +89,25 @@ fn main() -> anyhow::Result<()> {
             namespace,
         } = blob_request;
 
-        let dah = rt.block_on(async { get_header_by_height(block_height).await });
+        let dah = rt.block_on(async {
+            celestia_light_client
+                .get_header_by_height(block_height)
+                .await
+        });
 
-        let blob = rt.block_on(async { get_blob(block_height, commitment, namespace).await });
+        let blob = rt.block_on(async {
+            celestia_light_client
+                .get_blob(block_height, commitment, namespace)
+                .await
+        });
         let shares = blob.to_shares().unwrap();
 
         // NMT range proofs, from leaves into row roots.
-        let proofs =
-            rt.block_on(async { get_blob_proof(block_height, commitment, namespace).await });
+        let proofs = rt.block_on(async {
+            celestia_light_client
+                .get_blob_proof(block_height, commitment, namespace)
+                .await
+        });
 
         let eds_row_roots = &dah.dah.row_roots();
         let eds_column_roots = &dah.dah.column_roots();
@@ -170,17 +192,28 @@ fn main() -> anyhow::Result<()> {
     let encoded_headers = serde_cbor::to_vec(&headers).unwrap();
     stdin.write_vec(encoded_headers);
 
+    let now = std::time::Instant::now();
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
     let proof = prover.prove_plonk(&pkey, stdin).expect("proving failed");
     println!("Successfully generated proof!");
+    let elapsed_time = now.elapsed();
+    println!(
+        "Running blob_inclusion prove_plonk() took {} seconds.",
+        elapsed_time.as_secs()
+    );
 
     // Verify proof.
-    prover.verify_plonk(&proof, &vkey).expect("Verification failed");
+    prover
+        .verify_plonk(&proof, &vkey)
+        .expect("Verification failed");
 
-    // Save the proof.
+    // Save the proof as binary.
     proof
         .save("proof-with-pis.bin")
         .expect("saving proof failed");
+
+    // Save the proof as JSON.
+    fs::write("proof-with-pis.json", serde_json::to_string(&proof).unwrap()).unwrap();
 
     Ok(())
 }

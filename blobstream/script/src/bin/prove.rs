@@ -1,7 +1,7 @@
+use blobstream_script::helper::*;
 use clap::Parser;
 use sp1_sdk::SP1Stdin;
 use tokio::runtime;
-use blobstream_script::helper::*;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -21,6 +21,7 @@ pub struct ScriptArgs {
 /// RUST_LOG=info cargo run --bin script --release -- --trusted-block=1 --target-block=5
 /// ```
 fn main() -> anyhow::Result<()> {
+    dotenv::dotenv().ok();
     let prover = TendermintProver::new();
     let mut stdin = SP1Stdin::new();
 
@@ -29,7 +30,6 @@ fn main() -> anyhow::Result<()> {
         target_block,
     } = ScriptArgs::parse();
 
-    dotenv::dotenv().ok();
     sp1_sdk::utils::setup_logger();
 
     let rt = runtime::Runtime::new()?;
@@ -43,12 +43,18 @@ fn main() -> anyhow::Result<()> {
     let encoded_proof_inputs = serde_cbor::to_vec(&inputs).unwrap();
     stdin.write_vec(encoded_proof_inputs);
 
+    let now = std::time::Instant::now();
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
     let proof = prover
         .prover_client
         .prove_plonk(&prover.pkey, stdin)
         .expect("proving failed");
     println!("Successfully generated proof!");
+    let elapsed_time = now.elapsed();
+    println!(
+        "Running blobstream prove_plonk() took {} seconds.",
+        elapsed_time.as_secs()
+    );
 
     // Verify proof.
     prover
@@ -56,10 +62,13 @@ fn main() -> anyhow::Result<()> {
         .verify_plonk(&proof, &prover.vkey)
         .expect("Verification failed");
 
-    // Save the proof.
+    // Save the proof as binary.
     proof
         .save("proof-with-pis.bin")
         .expect("saving proof failed");
+
+    // Save the proof as JSON.
+    std::fs::write("proof-with-pis.json", serde_json::to_string(&proof).unwrap()).unwrap();
 
     Ok(())
 }
