@@ -116,9 +116,9 @@ pub fn main() {
                 .is_ok());
         }
 
-        sp1_zkvm::io::commit(&block_height);
-        sp1_zkvm::io::commit(&data_root);
-        sp1_zkvm::io::commit(&blob);
+        sp1_zkvm::io::commit(&blob.namespace.as_bytes());
+        sp1_zkvm::io::commit(&blob.data);
+        println!("blob: {}", B256::from_slice(&blob.data));
     }
 
     // Read blobstream headers
