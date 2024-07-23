@@ -47,7 +47,9 @@ fn main() -> anyhow::Result<()> {
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
     let proof = prover
         .prover_client
-        .prove_plonk(&prover.pkey, stdin)
+        .prove(&prover.pkey, stdin)
+        .plonk()
+        .run()
         .expect("proving failed");
     println!("Successfully generated proof!");
     let elapsed_time = now.elapsed();
@@ -59,7 +61,7 @@ fn main() -> anyhow::Result<()> {
     // Verify proof.
     prover
         .prover_client
-        .verify_plonk(&proof, &prover.vkey)
+        .verify(&proof, &prover.vkey)
         .expect("Verification failed");
 
     // Save the proof as binary.

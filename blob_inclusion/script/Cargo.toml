@@ -14,16 +14,16 @@ name = "vkey"
 path = "src/bin/vkey.rs"
 
 [dependencies]
-sp1-sdk = { git = "https://github.com/succinctlabs/sp1.git", tag = "v1.0.5-testnet", features=["plonk"] }
+sp1-sdk = { git = "https://github.com/succinctlabs/sp1.git", tag = "v1.0.1" }
+sp1-prover = { git = "https://github.com/succinctlabs/sp1.git", tag = "v1.0.1" }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
-serde = { version = "1.0", default-features = false, features = ["derive"] }
+serde = { version = "1.0.204", default-features = false, features = ["derive"] }
 serde_cbor = "0.11.2"
 clap = { version = "4.0", features = ["derive", "env"] }
 tracing = "0.1.40"
 celestia-rpc = {git="https://github.com/eigerco/lumina.git", rev="8094d04"}
 celestia-types = {git="https://github.com/eigerco/lumina.git", rev="8094d04"}
 nmt-rs = {git="https://github.com/Sovereign-Labs/nmt-rs.git", rev="ac03d7c", features=["serde"]}
-sp1-prover = { git = "https://github.com/succinctlabs/sp1.git", tag = "v1.0.5-testnet", features=["plonk"] }
 anyhow = "1.0.82"
 dotenv = "0.15.0"
 tokio = { version = "^1.38.0", features = ["full"] }

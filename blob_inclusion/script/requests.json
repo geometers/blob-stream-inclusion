@@ -1,12 +1,7 @@
 [
     {
-        "block_height": 1279715,
-        "commitment": "b596140c4ae3c16f14d02878bc0ac3f3702bdee8a2d31218223130673f0ac220",
-        "namespace": "7463656c6573746961"
-    },
-    {
-        "block_height": 1279735,
-        "commitment": "638bd67375406c42ec5a4837648eade94bd9249fd12cb99123ba6cfccdfdaf5d",
-        "namespace": "08b91d93e20b6a9c"
+        "block_height": 1916122,
+        "commitment": "9f2d95f144e4f7e6beb24197eceb69c78c101ae6827e0e4ec8037612e405319d",
+        "namespace": "1935200000"
     }
 ]

@@ -194,7 +194,7 @@ fn main() -> anyhow::Result<()> {
 
     let now = std::time::Instant::now();
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
-    let proof = prover.prove_plonk(&pkey, stdin).expect("proving failed");
+    let proof = prover.prove(&pkey, stdin).plonk().run().expect("proving failed");
     println!("Successfully generated proof!");
     let elapsed_time = now.elapsed();
     println!(
@@ -204,7 +204,7 @@ fn main() -> anyhow::Result<()> {
 
     // Verify proof.
     prover
-        .verify_plonk(&proof, &vkey)
+        .verify(&proof, &vkey)
         .expect("Verification failed");
 
     // Save the proof as binary.
