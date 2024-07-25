@@ -8,7 +8,7 @@ edition = "2021"
 alloy = { version = "0.1.1", default-features = false, features = [
     "sol-types",
 ] }
-sp1-zkvm = { git = "https://github.com/succinctlabs/sp1.git", rev = "e48c01ec" }
+sp1-zkvm = { git = "https://github.com/succinctlabs/sp1.git", rev = "v1.0.1" }
 serde = { version = "1.0.164", features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 bincode = "1.3.3"
