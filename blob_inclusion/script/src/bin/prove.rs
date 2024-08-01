@@ -194,6 +194,7 @@ fn main() -> anyhow::Result<()> {
 
     let now = std::time::Instant::now();
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
+    println!("Generating proof, please wait...");
     let proof = prover.prove(&pkey, stdin).plonk().run().expect("proving failed");
     println!("Successfully generated proof!");
     let elapsed_time = now.elapsed();

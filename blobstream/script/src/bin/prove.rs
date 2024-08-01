@@ -45,6 +45,7 @@ fn main() -> anyhow::Result<()> {
 
     let now = std::time::Instant::now();
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
+    println!("Generating proof, please wait...");
     let proof = prover
         .prover_client
         .prove(&prover.pkey, stdin)
