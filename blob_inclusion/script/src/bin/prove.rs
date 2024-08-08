@@ -55,6 +55,8 @@ fn main() -> anyhow::Result<()> {
         request_path,
     } = ScriptArgs::parse();
 
+    sp1_sdk::utils::setup_logger();
+
     let tendermint_client = TendermintRPCClient::default();
     let light_blocks = rt.block_on(async {
         tendermint_client
@@ -192,6 +194,14 @@ fn main() -> anyhow::Result<()> {
     let encoded_headers = serde_cbor::to_vec(&headers).unwrap();
     stdin.write_vec(encoded_headers);
 
+    println!("Executing, please wait...");
+    let execution = prover
+        .execute(ELF, stdin)
+        .run()
+        .unwrap();
+    println!("{:?}", execution);
+
+    /*
     let now = std::time::Instant::now();
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
     println!("Generating proof, please wait...");
@@ -215,6 +225,7 @@ fn main() -> anyhow::Result<()> {
 
     // Save the proof as JSON.
     fs::write("proof-with-pis.json", serde_json::to_string(&proof).unwrap()).unwrap();
+    */
 
     Ok(())
 }

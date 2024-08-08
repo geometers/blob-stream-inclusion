@@ -116,6 +116,7 @@ impl TendermintRPCClient {
         start_height: u64,
         end_height: u64,
     ) -> Vec<LightBlock> {
+        println!("fetching peer id");
         let peer_id = self.fetch_peer_id().await.unwrap();
         let batch_size = 25;
         let mut blocks = Vec::new();
@@ -204,6 +205,7 @@ impl TendermintRPCClient {
         let client = Client::new();
         let fetch_peer_id_url = format!("{}/status", self.url);
 
+        println!("{}", fetch_peer_id_url);
         let response: PeerIdResponse = client
             .get(fetch_peer_id_url)
             .send()
@@ -416,15 +418,19 @@ impl TendermintProver {
         trusted_block_height: u64,
         target_block_height: u64,
     ) -> ProofInputs {
+        println!("{}", 0);
         let tendermint_client = TendermintRPCClient::default();
+        println!("{}", 1);
         let light_blocks = tendermint_client
             .fetch_light_blocks_in_range(trusted_block_height, target_block_height)
             .await;
+        println!("{}", 2);
 
         let mut headers = Vec::new();
         for light_block in &light_blocks[1..light_blocks.len() - 1] {
             headers.push(light_block.signed_header.header.clone());
         }
+        println!("{}", 3);
 
         ProofInputs {
             trusted_block_height,

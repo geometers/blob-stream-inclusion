@@ -55,6 +55,7 @@ pub fn compute_data_commitment(headers: &[Header]) -> [u8; 32] {
 }
 
 pub fn main() {
+    println!("cycle-tracker-start: main-body");
     // Read the number of blob requests
     let num_blobs: u8 = sp1_zkvm::io::read();
 
@@ -138,4 +139,5 @@ pub fn main() {
         B256::from_slice(&blobstream_commitment)
     );
     sp1_zkvm::io::commit(&blobstream_commitment);
+    println!("cycle-tracker-end: main-body");
 }

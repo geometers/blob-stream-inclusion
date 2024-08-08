@@ -700,6 +700,7 @@ dependencies = [
  "serde",
  "serde_cbor",
  "serde_json",
+ "sp1-derive 1.1.0",
  "sp1-helper",
  "sp1-prover",
  "sp1-sdk",
@@ -5307,7 +5308,7 @@ dependencies = [
  "serde_with",
  "size",
  "snowbridge-amcl",
- "sp1-derive",
+ "sp1-derive 1.0.1",
  "sp1-primitives",
  "strum",
  "strum_macros",
@@ -5324,6 +5325,17 @@ dependencies = [
 name = "sp1-derive"
 version = "1.0.1"
 source = "git+https://github.com/succinctlabs/sp1.git?tag=v1.0.1#dd032eb23949828d244d1ad1f1569aa78155837c"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "sp1-derive"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8dbc1d9a05a0e83f548907d50539e5e59873bbf6a82793ce87a195345ca7ddf9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5464,7 +5476,7 @@ dependencies = [
  "serde",
  "serde_with",
  "sp1-core",
- "sp1-derive",
+ "sp1-derive 1.0.1",
  "sp1-primitives",
  "static_assertions",
  "tracing",
