@@ -118,7 +118,6 @@ pub fn main() {
 
         sp1_zkvm::io::commit(&blob.namespace.as_bytes());
         sp1_zkvm::io::commit(&blob.data);
-        println!("blob: {}", B256::from_slice(&blob.data));
     }
 
     // Read blobstream headers
