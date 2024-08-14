@@ -64,7 +64,7 @@ pub fn main() {
         let data_root: Hash = sp1_zkvm::io::read();
         data_roots.push(data_root);
         // Read the block height
-        let block_height: u64 = sp1_zkvm::io::read();
+        let _block_height: u64 = sp1_zkvm::io::read();
         // Read num rows
         let num_rows: u32 = sp1_zkvm::io::read();
         // Read namespace ID

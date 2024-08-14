@@ -1,6 +1,6 @@
 use blobstream_script::helper::*;
 use clap::Parser;
-use sp1_sdk::SP1Stdin;
+use sp1_sdk::{ProverClient, SP1Stdin};
 use tokio::runtime;
 
 #[derive(Parser, Debug)]
@@ -58,11 +58,13 @@ fn main() -> anyhow::Result<()> {
         elapsed_time.as_secs()
     );
 
+    // Set up a local ProverClient which will only be used to verify the proof locally. 
+    // In this local() mode, this does not require a gnark-ffi Docker container.
+    let pc = ProverClient::local();
+    let (_, vkey) = pc.setup(TENDERMINT_ELF);
+
     // Verify proof.
-    prover
-        .prover_client
-        .verify(&proof, &prover.vkey)
-        .expect("Verification failed");
+    pc.verify(&proof, &vkey).expect("Verification failed");
 
     // Save the proof as binary.
     proof

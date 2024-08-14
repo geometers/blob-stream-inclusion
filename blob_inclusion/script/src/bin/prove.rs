@@ -202,6 +202,11 @@ fn main() -> anyhow::Result<()> {
         elapsed_time.as_secs()
     );
 
+    // Set up a local ProverClient which will only be used to verify the proof locally. 
+    // In this local() mode, this does not require a gnark-ffi Docker container.
+    let prover = ProverClient::local();
+    let (_, vkey) = prover.setup(ELF);
+
     // Verify proof.
     prover
         .verify(&proof, &vkey)
