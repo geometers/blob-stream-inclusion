@@ -20,6 +20,7 @@ pub struct ScriptArgs {
 /// ```
 /// RUST_LOG=info cargo run --bin script --release -- --trusted-block=1 --target-block=5
 /// ```
+const ELF: &[u8] = std::include_bytes!("../../../program/elf/riscv32im-succinct-zkvm-elf");
 fn main() -> anyhow::Result<()> {
     dotenv::dotenv().ok();
     let prover = TendermintProver::new();
@@ -42,6 +43,16 @@ fn main() -> anyhow::Result<()> {
     });
     let encoded_proof_inputs = serde_cbor::to_vec(&inputs).unwrap();
     stdin.write_vec(encoded_proof_inputs);
+
+    let now = std::time::Instant::now();
+    let _execution = prover
+        .prover_client
+        .execute(ELF, stdin.clone())
+        .run()
+        .unwrap();
+    let elapsed_time = now.elapsed();
+
+    println!("Execution took {} seconds.", elapsed_time.as_secs());
 
     let now = std::time::Instant::now();
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.

@@ -43,7 +43,7 @@ fn main() -> anyhow::Result<()> {
     dotenv::dotenv().ok();
 
     let prover = ProverClient::new();
-    let (pkey, vkey) = prover.setup(ELF);
+    let (pkey, _) = prover.setup(ELF);
 
     let mut stdin = SP1Stdin::new();
     let rt = runtime::Runtime::new()?;
@@ -193,6 +193,15 @@ fn main() -> anyhow::Result<()> {
     // Write blobstream headers
     let encoded_headers = serde_cbor::to_vec(&headers).unwrap();
     stdin.write_vec(encoded_headers);
+
+    let now = std::time::Instant::now();
+    let _execution = prover
+        .execute(ELF, stdin.clone())
+        .run()
+        .unwrap();
+    let elapsed_time = now.elapsed();
+
+    println!("Execution took {} seconds.", elapsed_time.as_secs());
 
     let now = std::time::Instant::now();
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
