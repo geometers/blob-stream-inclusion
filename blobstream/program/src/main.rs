@@ -149,6 +149,7 @@ pub fn convert_bitmap_to_u256(arr: [bool; 256]) -> U256 {
 }
 
 pub fn main() {
+    println!("cycle-tracker-start: main-body");
     // Read in the proof inputs. Note: Use a slice, as bincode is unable to deserialize protobuf.
     let proof_inputs_vec = sp1_zkvm::io::read_vec();
     let proof_inputs = serde_cbor::from_slice(&proof_inputs_vec).unwrap();
@@ -204,4 +205,5 @@ pub fn main() {
         validator_bitmap_u256,
     ));
     sp1_zkvm::io::commit_slice(&proof_outputs);
+    println!("cycle-tracker-end: main-body");
 }
