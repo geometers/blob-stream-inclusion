@@ -21,7 +21,7 @@ celestia light start --core.ip rpc.celestia.pops.one --p2p.network celestia
 - If you're making proofs on your local machine, set `SP1_PROVER=local` in your `.env`
 - To access the SP1 prover network, you will need the `SP1_PRIVATE_KEY` of a whitelisted address.
 See here for how to obtain one:
-[docs.succinct.xyz/prover-network/setup.html](https://docs.succinct.xyz/prover-network/setup.html)
+[docs.succinct.xyz/prover-network/setup.html](https://docs.succinct.xyz/generating-proofs/prover-network/key-setup.html)
 
 ## e2e test
 Check that both these programs print the same data commitment (the data root tuple root):
