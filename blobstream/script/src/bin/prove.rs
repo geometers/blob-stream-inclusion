@@ -43,6 +43,8 @@ fn main() -> anyhow::Result<()> {
     let encoded_proof_inputs = serde_cbor::to_vec(&inputs).unwrap();
     stdin.write_vec(encoded_proof_inputs);
 
+    println!("Generating proof...");
+
     let now = std::time::Instant::now();
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
     let proof = prover
@@ -63,6 +65,7 @@ fn main() -> anyhow::Result<()> {
     let pc = ProverClient::local();
     let (_, vkey) = pc.setup(TENDERMINT_ELF);
 
+    println!("Running pc.verify(&proof, &vkey)");
     // Verify proof.
     pc.verify(&proof, &vkey).expect("Verification failed");
 

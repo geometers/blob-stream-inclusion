@@ -13,8 +13,8 @@ pgo-data.profdata
 /.vscode
 
 # Proofs
-# **/proof-with-pis.json
-# **/proof-with-io.json
+**/proof-with-pis.json
+**/proof-with-io.json
 
 # Env
 .env

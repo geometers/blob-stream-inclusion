@@ -44,3 +44,6 @@ sp1-helper = { git = "https://github.com/succinctlabs/sp1.git", branch = "ratan/
 
 [patch.crates-io]
 nmt-rs = {git="https://github.com/Sovereign-Labs/nmt-rs.git", rev="ac03d7c", features=["serde"]}
+
+[features]
+native-gnark = ["sp1-sdk/native-gnark"]
