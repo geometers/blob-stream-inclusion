@@ -43,7 +43,7 @@ fn main() -> anyhow::Result<()> {
     dotenv::dotenv().ok();
 
     let prover = ProverClient::new();
-    let (pkey, vkey) = prover.setup(ELF);
+    let (pkey, _vkey) = prover.setup(ELF);
 
     let mut stdin = SP1Stdin::new();
     let rt = runtime::Runtime::new()?;
@@ -71,6 +71,7 @@ fn main() -> anyhow::Result<()> {
     assert_eq!(blob_requests.len(), num_requests as usize);
     stdin.write(&num_requests);
 
+    println!("Fetching data from light client...");
     let celestia_light_client = {
         let auth_token = match std::env::var("LIGHT_NODE_AUTH_TOKEN") {
             Ok(token) => Some(token),
@@ -191,6 +192,8 @@ fn main() -> anyhow::Result<()> {
     // Write blobstream headers
     let encoded_headers = serde_cbor::to_vec(&headers).unwrap();
     stdin.write_vec(encoded_headers);
+
+    println!("Generating proof...");
 
     let now = std::time::Instant::now();
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
