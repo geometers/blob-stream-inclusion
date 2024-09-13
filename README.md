@@ -24,16 +24,15 @@ See here for how to obtain one:
 [docs.succinct.xyz/prover-network/setup.html](https://docs.succinct.xyz/generating-proofs/prover-network/key-setup.html)
 
 ## e2e test
-Check that both these programs print the same data commitment (the data root tuple root):
-`0x0a4e67626957c8691c95fce5c0c391fb731c27ef0eed6973b150152c9fbb3058`
+Check that both these programs print the same data commitment (the data root tuple root).
 
 ### Blobstream
 This generates a proof at `blobstream/script/proof-with-pis.json`.
 
 ```bash
 cd blobstream/script && cargo run --release \
--- --trusted-block=1279715 \
---target-block=1279735
+-- --trusted-block=1865870 \
+--target-block=1865890
 ```
 
 ### Blob inclusion
@@ -41,9 +40,9 @@ This generates a proof at `blob_inclusion/script/proof-with-pis.json`.
 
 ```bash
 cd blob_inclusion/script && cargo run --release \
--- --start-height=1279715 \
---end-height=1279735 \
---num-requests=2 \
+-- --start-height=1865870 \
+--end-height=1865890 \
+--num-requests=1 \
 --request-path=requests.json
 ```
 
