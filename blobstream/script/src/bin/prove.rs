@@ -63,6 +63,7 @@ fn main() -> anyhow::Result<()> {
     let pc = ProverClient::local();
     let (_, vkey) = pc.setup(TENDERMINT_ELF);
 
+    println!("Running pc.verify(&proof, &vkey)");
     // Verify proof.
     pc.verify(&proof, &vkey).expect("Verification failed");
 
