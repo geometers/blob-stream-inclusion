@@ -55,6 +55,8 @@ fn main() -> anyhow::Result<()> {
         request_path,
     } = ScriptArgs::parse();
 
+    sp1_sdk::utils::setup_logger();
+
     let tendermint_client = TendermintRPCClient::default();
     let light_blocks = rt.block_on(async {
         tendermint_client
@@ -196,10 +198,25 @@ fn main() -> anyhow::Result<()> {
     println!("Generating proof...");
 
     let now = std::time::Instant::now();
-    // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
-    let proof = prover.prove(&pkey, stdin).plonk().run().expect("proving failed");
-    println!("Successfully generated proof!");
+    let _execution = prover
+        .execute(ELF, stdin.clone())
+        .run()
+        .unwrap();
     let elapsed_time = now.elapsed();
+
+    println!("Execution took {} seconds.", elapsed_time.as_secs());
+
+    let now = std::time::Instant::now();
+    // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
+ 
+    println!("Generating proof, please wait...");
+
+    let proof = prover.prove(&pkey, stdin).plonk().run().expect("proving failed");
+
+    println!("Successfully generated proof!");
+
+    let elapsed_time = now.elapsed();
+
     println!(
         "Running blob_inclusion prove_plonk() took {} seconds.",
         elapsed_time.as_secs()

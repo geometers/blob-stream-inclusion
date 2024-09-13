@@ -20,6 +20,7 @@ pub struct ScriptArgs {
 /// ```
 /// RUST_LOG=info cargo run --bin script --release -- --trusted-block=1 --target-block=5
 /// ```
+const ELF: &[u8] = std::include_bytes!("../../../program/elf/riscv32im-succinct-zkvm-elf");
 fn main() -> anyhow::Result<()> {
     dotenv::dotenv().ok();
     let prover = TendermintProver::new();
@@ -46,15 +47,31 @@ fn main() -> anyhow::Result<()> {
     println!("Generating proof...");
 
     let now = std::time::Instant::now();
+    let _execution = prover
+        .prover_client
+        .execute(ELF, stdin.clone())
+        .run()
+        .unwrap();
+    let elapsed_time = now.elapsed();
+
+    println!("Execution took {} seconds.", elapsed_time.as_secs());
+
+    let now = std::time::Instant::now();
     // Generate the proof. Depending on SP1_PROVER env, this may be a local or network proof.
+
+    println!("Generating proof, please wait...");
+
     let proof = prover
         .prover_client
         .prove(&prover.pkey, stdin)
         .plonk()
         .run()
         .expect("proving failed");
+
     println!("Successfully generated proof!");
+
     let elapsed_time = now.elapsed();
+
     println!(
         "Running blobstream prove_plonk() took {} seconds.",
         elapsed_time.as_secs()
