@@ -1,7 +1,8 @@
 # SP1 Blobstream + Blob inclusion proof
 
 ## Setup
-Create a `.env` file and copy the `.env.example` file there. Fill in your own `SP1_PRIVATE_KEY` and
+- [Install SP1.](https://docs.succinct.xyz/getting-started/install.html)
+- Create a `.env` file and copy the `.env.example` file there. Fill in your own `SP1_PRIVATE_KEY` and
 `LIGHT_NODE_AUTH_TOKEN` (see below for instructions on obtaining them).
 
 ### Celestia
