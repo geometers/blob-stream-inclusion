@@ -5,8 +5,8 @@ name = "blob-inclusion-program"
 edition = "2021"
 
 [dependencies]
-sp1-zkvm = { git = "https://github.com/succinctlabs/sp1.git", rev = "v1.0.1" }
-sp1-derive = "1.0.1"
+sp1-zkvm = { git = "https://github.com/succinctlabs/sp1.git", rev = "v2.0.0" }
+sp1-derive = "2.0.0"
 nmt-rs = {git="https://github.com/Sovereign-Labs/nmt-rs.git", rev="ac03d7c", features=["serde"]}
 celestia-types = {git="https://github.com/eigerco/lumina.git", rev="8094d04"}
 tendermint = "0.35.0"
